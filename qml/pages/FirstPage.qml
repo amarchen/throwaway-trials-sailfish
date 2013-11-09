@@ -35,6 +35,8 @@ import Sailfish.Silica 1.0
 Page {
     id: page
 
+    property real startTime: new Date().getTime()
+
     // To enable PullDownMenu, place our content in a SilicaFlickable
     SilicaFlickable {
         anchors.fill: parent
@@ -47,25 +49,71 @@ Page {
             }
         }
 
-        // Tell SilicaFlickable the height of its content.
-        contentHeight: column.height
+        Rectangle {
+            anchors.fill: parent
+            color: "black"
 
-        // Place our content in a Column.  The PageHeader is always placed at the top
-        // of the page, followed by our content.
-        Column {
-            id: column
+            Rectangle {
+                id: clickRect
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: parent.height / 3
+                anchors.margins: Theme.paddingLarge
+                color: "lightyellow"
 
-            width: page.width
-            spacing: Theme.paddingLarge
-            PageHeader {
-                title: "UI Template"
+                Label {
+                    anchors.centerIn: parent
+                    text: "Double tap me"
+                    color: "black"
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("clicked");
+                        clickLog.text = (new Date().getTime() - startTime) + "ms: clicked\n" + clickLog.text
+                    }
+                    onDoubleClicked: {
+                        console.log("double clicked");
+                        doubleClickLog.text +=  (new Date().getTime() - startTime) + "ms: double clicked\n" + doubleClickLog.text
+                    }
+                }
             }
-            Label {
-                x: Theme.paddingLarge
-                text: "Hello Sailors"
-                color: Theme.secondaryHighlightColor
-                font.pixelSize: Theme.fontSizeLarge
+            Rectangle {
+                id: logRect
+                anchors.top: clickRect.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                color: "lightblue"
+
+                TextArea {
+                    id: clickLog
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.verticalCenter
+                    clip: true
+                    text: "clicks:\n"
+                }
+
+                TextArea {
+                    id: doubleClickLog
+                    anchors.top: clickLog.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
+                    clip: true
+                    text: "Double clicks:\n"
+                }
+
             }
+
+        }
+
+        Component.onCompleted: {
+            console.log("startTime is " + startTime)
+            console.log("new date time is " + new Date().getTime())
         }
     }
 }
